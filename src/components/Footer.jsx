@@ -30,16 +30,16 @@ const Footer = () => {
               delay: i * 0.3,
             }}
             className={`absolute w-4 h-4  opacity-30 ${i % 4 === 0
-                ? "bg-blue-400"
-                : i % 4 === 1
-                  ? "bg-cyan-400"
-                  : i % 4 === 2
-                    ? "bg-indigo-400"
-                    : "bg-sky-400"
+              ? "bg-blue-400"
+              : i % 4 === 1
+                ? "bg-cyan-400"
+                : i % 4 === 2
+                  ? "bg-indigo-400"
+                  : "bg-sky-400"
               }`}
             style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
+              top: `${(i * 8.33) % 100}%`,
+              left: `${(i * 13.7) % 100}%`,
             }}
           />
         ))}

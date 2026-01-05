@@ -1,14 +1,11 @@
 import React from 'react'
-import HeroSection from '../../components/HeroSection'
+import ToyCarScroll from '../../components/ToyCarScroll.jsx'
 import ProductsPage from '../../components/ProductsPage'
-import ProductSlider from '../../components/ProductSlider'
+
 const Page = () => {
   return (
-    <div>
-      <div className=''>
-        {/* <ProductSlider /> */}
-        <HeroSection />
-      </div>
+    <div className='bg-[#F7F8FA]'>
+      <ToyCarScroll />
       <div>
         <ProductsPage />
       </div>
