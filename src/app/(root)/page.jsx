@@ -1,16 +1,14 @@
-import React from 'react'
-import ToyCarScroll from '../../components/ToyCarScroll.jsx'
-import ProductsPage from '../../components/ProductsPage'
+import React from 'react';
+import ToyCarScroll from '../../components/ToyCarScroll.jsx';
+import UnimogProductContent from '../../components/UnimogProductContent.jsx';
 
 const Page = () => {
   return (
-    <div className='bg-[#F7F8FA]'>
+    <div className="bg-[#0F172A] min-h-screen">
       <ToyCarScroll />
-      <div>
-        <ProductsPage />
-      </div>
+      <UnimogProductContent />
     </div>
-  )
-}
+  );
+};
 
-export default Page
+export default Page;

@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ToySquad - Kids Electric Cars</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-navy: #0F172A;
+      --color-card-bg: #1E293B;
+      --color-brand-blue: #2563EB;
+      --color-brand-cyan: #00A3E0;
+      --color-slate-muted: #94A3B8;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--color-navy);
+      color: #ffffff;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* 100% Transparent Header Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 40;
+      background: transparent;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .navbar-logo {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #0f172a;
+      letter-spacing: -0.03em;
+      pointer-events: auto;
+    }
+
+    .navbar-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      pointer-events: auto;
+    }
+
+    .navbar-link {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #0f172a;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .navbar-link:hover {
+      color: var(--color-brand-blue);
+    }
+
+    /* Scroll Hero Container (400vh) - UNTOUCHED */
+    .scroll-container {
+      position: relative;
+      height: 400vh;
+      background-color: #ffffff;
+    }
+
+    .sticky-wrapper {
+      position: sticky;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .preloader {
+      position: absolute;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      transition: opacity 0.5s ease;
+    }
+
+    .preloader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loader-box {
+      width: 100%;
+      max-width: 320px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .loader-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 16px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 10px;
+      background-color: #f1f5f9;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background-color: var(--color-brand-blue);
+      border-radius: 999px;
+      transition: width 0.15s ease;
+    }
+
+    .progress-text {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #64748b;
+    }
+
+    .sound-btn {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      z-index: 30;
+      padding: 10px 18px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      border-radius: 16px;
+      color: #334155;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s ease;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: #64748b;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .scroll-arrow {
+      width: 16px;
+      height: 16px;
+      animation: bounce 1.5s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+
+    /* ---------------------------------------------------- */
+    /* HOMEPAGE SECTIONS BELOW HERO                        */
+    /* ---------------------------------------------------- */
+
+    .content-container {
+      background-color: var(--color-navy);
+      position: relative;
+      z-index: 10;
+    }
+
+    .sec-block {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 96px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .tag-blue {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--color-brand-cyan);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .sec-title {
+      font-size: 2.75rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: #ffffff;
+      margin-bottom: 24px;
+    }
+
+    /* SECTION 01: BRAND INTRO */
+    .intro-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .pill-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    .pill-box {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 16px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 0.875rem;
+    }
+
+    /* CAR ASSEMBLY SECTION (MATCHING REFERENCE DESIGN) */
+    .assembly-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 32px;
+      margin-top: 48px;
+    }
+
+    .assembly-card {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .assembly-pill-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 10px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: center;
+      margin-top: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .assembly-pill-btn:hover {
+      background: var(--color-brand-blue);
+      border-color: var(--color-brand-blue);
+    }
+
+    .assembly-row {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 32px;
+      padding: 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      margin-top: 48px;
+    }
+
+    /* SECTION 02: COLLECTION */
+    .prod-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 32px;
+      margin-top: 48px;
+    }
+
+    .prod-card {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color 0.2s ease;
+    }
+
+    .prod-card:hover {
+      border-color: rgba(37, 99, 235, 0.5);
+    }
+
+    .btn-brand {
+      background: linear-gradient(135deg, #2563EB 0%, #4F46E5 100%);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 0.875rem;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .btn-brand:hover {
+      transform: translateY(-2px);
+    }
+
+    /* SECTION 03: WHY CHOOSE US */
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px;
+      margin-top: 48px;
+    }
+
+    .why-card {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 32px;
+    }
+
+    /* SECTION 04: AGE GUIDE */
+    .age-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+
+    .age-btn {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--color-slate-muted);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      font-weight: 700;
+      padding: 12px 24px;
+      border-radius: 16px;
+      cursor: pointer;
+    }
+
+    .age-btn.active {
+      background: var(--color-brand-blue);
+      color: #ffffff;
+      border-color: var(--color-brand-blue);
+    }
+
+    /* SECTION 05: HOW IT WORKS */
+    .step-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .step-card {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 32px;
+    }
+
+    /* SECTION 06: TRUST STRIP */
+    .trust-strip {
+      background: rgba(37, 99, 235, 0.1);
+      padding: 32px 24px;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 24px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    /* SECTION 09: FAQ ACCORDION */
+    .faq-item {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .faq-q {
+      padding: 20px 24px;
+      font-weight: 700;
+      font-size: 1.0625rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .faq-a {
+      padding: 0 24px 20px;
+      font-size: 0.875rem;
+      color: var(--color-slate-muted);
+      line-height: 1.6;
+      display: none;
+    }
+
+    .faq-item.open .faq-a {
+      display: block;
+    }
+
+    @media (max-width: 900px) {
+      .intro-grid, .assembly-row {
+        grid-template-columns: 1fr;
+      }
+      .sec-title {
+        font-size: 2.25rem;
+      }
+      .navbar-links {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 100% Transparent Header Navbar -->
+  <header class="navbar">
+    <div class="navbar-logo">ToySquad</div>
+    <nav class="navbar-links">
+      <a href="#" class="navbar-link">Home</a>
+      <a href="#" class="navbar-link">Assembly</a>
+      <a href="#" class="navbar-link">Products</a>
+      <a href="#" class="navbar-link">Categories</a>
+      <a href="#" class="navbar-link">About</a>
+    </nav>
+  </header>
+
+  <!-- 400vh Scroll Hero Container (UNTOUCHED APPROVED HERO) -->
+  <div class="scroll-container" id="scrollContainer">
+    <div class="sticky-wrapper">
+
+      <div class="preloader" id="preloader">
+        <div class="loader-box">
+          <div class="loader-title">Assembling Vehicle</div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-text" id="progressText">Loading 0%</div>
+        </div>
+      </div>
+
+      <canvas id="heroCanvas"></canvas>
+
+      <button class="sound-btn" id="soundBtn">
+        <span id="soundIcon">🔊</span>
+        <span id="soundText">Sound On</span>
+      </button>
+
+      <div class="scroll-hint" id="scrollHint">
+        <span>Scroll to Assemble</span>
+        <svg class="scroll-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+        </svg>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- HOMEPAGE SECTIONS BELOW HERO -->
+  <div class="content-container">
+
+    <!-- SECTION 01 — BRAND INTRO -->
+    <section class="sec-block">
+      <div class="intro-grid">
+        <div>
+          <span class="tag-blue">// REDEFINING KIDS ELECTRIC MOBILITY</span>
+          <h2 class="sec-title">Redefining Electric Play For Young Explorers.</h2>
+          <p style="color: var(--color-slate-muted); font-size: 1.0625rem; line-height: 1.7;">
+            ToySquad crafts premium electric ride-on vehicles engineered with real steel sub-frames, official automotive licensing, dual high-torque motors, and complete parental remote safety control.
+          </p>
+
+          <div class="pill-grid">
+            <div class="pill-box">🛡️ Safe for Kids</div>
+            <div class="pill-box">📻 Parent Remote</div>
+            <div class="pill-box">⚙️ Realistic Design</div>
+            <div class="pill-box">🏆 Premium Build</div>
+          </div>
+        </div>
+
+        <div style="text-align: center;">
+          <img src="./frames/horizontal/ezgif-frame-050.jpg" alt="Unimog 4WD" style="width: 100%; border-radius: 24px; border: 1px solid rgba(255,255,255,0.08);" />
+          <div style="font-family: var(--font-mono); font-size: 0.8125rem; color: var(--color-brand-cyan); margin-top: 12px; font-weight: 700;">
+            MERCEDES-BENZ UNIMOG 4WD — ₹41,999 INR
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CAR ASSEMBLY & ENGINEERING GUIDE (MATCHING REFERENCE DESIGN) -->
+    <section class="sec-block">
+      <div style="text-align: center; max-width: 700px; margin: 0 auto;">
+        <span class="tag-blue">// PRECISION CAR ASSEMBLY</span>
+        <h3 class="sec-title">Engineered for Simple, Tool-Free Parent Assembly</h3>
+        <p style="color: var(--color-slate-muted); font-size: 1rem; line-height: 1.6;">
+          Pre-wired steel sub-frame and quick-connect terminals mean your child's vehicle is unboxed and ready for the trail in under 25 minutes.
+        </p>
+      </div>
+
+      <!-- 4 Step Cards Grid -->
+      <div class="assembly-grid">
+        <div class="assembly-card">
+          <img src="./frames/horizontal/ezgif-frame-005.jpg" alt="Step 1" style="width: 100%; border-radius: 16px; margin-bottom: 16px;" />
+          <h4 style="font-size: 1rem; font-weight: 700;">01 / Unbox & Inspect Frame</h4>
+          <p style="font-size: 0.75rem; color: var(--color-slate-muted); margin-top: 4px;">Steel chassis arrives 85% pre-assembled out of shipping crate.</p>
+          <div class="assembly-pill-btn">Step 01 Details</div>
+        </div>
+
+        <div class="assembly-card">
+          <img src="./frames/horizontal/ezgif-frame-018.jpg" alt="Step 2" style="width: 100%; border-radius: 16px; margin-bottom: 16px;" />
+          <h4 style="font-size: 1rem; font-weight: 700;">02 / Mount Heavy EVA Tires</h4>
+          <p style="font-size: 0.75rem; color: var(--color-slate-muted); margin-top: 4px;">Slide 14" puncture-proof rubber tires onto steel axles with quick lock pins.</p>
+          <div class="assembly-pill-btn">Step 02 Details</div>
+        </div>
+
+        <div class="assembly-card">
+          <img src="./frames/horizontal/ezgif-frame-032.jpg" alt="Step 3" style="width: 100%; border-radius: 16px; margin-bottom: 16px;" />
+          <h4 style="font-size: 1rem; font-weight: 700;">03 / Connect 24V Battery</h4>
+          <p style="font-size: 0.75rem; color: var(--color-slate-muted); margin-top: 4px;">Plug quick-connect terminals under seat into 24V battery unit.</p>
+          <div class="assembly-pill-btn">Step 03 Details</div>
+        </div>
+
+        <div class="assembly-card">
+          <img src="./frames/horizontal/ezgif-frame-048.jpg" alt="Step 4" style="width: 100%; border-radius: 16px; margin-bottom: 16px;" />
+          <h4 style="font-size: 1rem; font-weight: 700;">04 / Pair Parent Remote</h4>
+          <p style="font-size: 0.75rem; color: var(--color-slate-muted); margin-top: 4px;">Hold 2.4G remote sync button 3 seconds until blue LED locks.</p>
+          <div class="assembly-pill-btn">Step 04 Details</div>
+        </div>
+      </div>
+
+      <!-- Alternating Detail Row 1 -->
+      <div class="assembly-row">
+        <div>
+          <img src="./frames/horizontal/ezgif-frame-015.jpg" alt="Chassis Detail" style="width: 100%; border-radius: 20px;" />
+        </div>
+        <div>
+          <span class="tag-blue">// HEAVY-DUTY SUB-FRAME</span>
+          <h4 style="font-size: 2rem; font-weight: 900; margin-bottom: 16px;">Pre-Wired Tubular Steel Chassis & Twin Motors</h4>
+          <p style="font-size: 0.95rem; color: var(--color-slate-muted); line-height: 1.6; margin-bottom: 16px;">
+            Every ToySquad electric vehicle arrives with main drive gearboxes and steering linkages pre-torqued from the factory.
+          </p>
+          <div style="font-family: var(--font-mono); font-size: 0.8125rem; color: #34D399; space-y: 8px;">
+            <div>✓ Factory-torqued motor & gearbox mounting bolts</div>
+            <div>✓ Color-coded error-proof wiring harness terminals</div>
+            <div>✓ Quick-lock stainless steel axle retention pins</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alternating Detail Row 2 -->
+      <div class="assembly-row">
+        <div>
+          <span class="tag-blue">// 3-MINUTE REMOTE PAIRING</span>
+          <h4 style="font-size: 2rem; font-weight: 900; margin-bottom: 16px;">Seamless Electrical Harness & 2.4G Remote Sync</h4>
+          <p style="font-size: 0.95rem; color: var(--color-slate-muted); line-height: 1.6; margin-bottom: 24px;">
+            Plug in the 24V battery terminal, snap on the steering wheel, and sync the parent remote controller in 3 seconds.
+          </p>
+          <div style="display: flex; gap: 16px;">
+            <button class="btn-brand">View Step-by-Step Guide →</button>
+            <div class="assembly-pill-btn" style="margin: 0;">Download Manual PDF 📄</div>
+          </div>
+        </div>
+        <div>
+          <img src="./frames/horizontal/ezgif-frame-035.jpg" alt="Wiring Detail" style="width: 100%; border-radius: 20px;" />
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 02 — OUR COLLECTION -->
+    <section class="sec-block">
+      <span class="tag-blue">// CURATED CATALOGUE</span>
+      <h3 class="sec-title">Our Electric Vehicle Collection</h3>
+
+      <div class="prod-grid">
+        <!-- Product 1 -->
+        <div class="prod-card">
+          <img src="./frames/horizontal/ezgif-frame-050.jpg" alt="Unimog 4WD" style="width: 100%; border-radius: 16px; margin-bottom: 16px;" />
+          <h4 style="font-size: 1.125rem; font-weight: 700;">Mercedes-Benz Unimog 4WD</h4>
+          <p style="font-size: 0.75rem; color: var(--color-slate-muted); margin-bottom: 12px;">24V 7Ah | Dual 200W | 8 km/h</p>
+          <div style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 900; color: #fff; margin-bottom: 16px;">₹41,999 INR</div>
+          <button class="btn-brand">Add to Cart</button>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="prod-card">
+          <img src="./frames/horizontal/ezgif-frame-035.jpg" alt="Expedition Jeep" style="width: 100%; border-radius: 16px; margin-bottom: 16px;" />
+          <h4 style="font-size: 1.125rem; font-weight: 700;">ToySquad Expedition Jeep</h4>
+          <p style="font-size: 0.75rem; color: var(--color-slate-muted); margin-bottom: 12px;">12V 10Ah | Dual 45W | 6.5 km/h</p>
+          <div style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 900; color: #fff; margin-bottom: 16px;">₹34,999 INR</div>
+          <button class="btn-brand">Add to Cart</button>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="prod-card">
+          <img src="./frames/horizontal/ezgif-frame-020.jpg" alt="GT Convertible" style="width: 100%; border-radius: 16px; margin-bottom: 16px;" />
+          <h4 style="font-size: 1.125rem; font-weight: 700;">GT Super Sports Convertible</h4>
+          <p style="font-size: 0.75rem; color: var(--color-slate-muted); margin-bottom: 12px;">12V 7Ah | Dual 35W | 5 km/h</p>
+          <div style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 900; color: #fff; margin-bottom: 16px;">₹29,999 INR</div>
+          <button class="btn-brand">Add to Cart</button>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="prod-card">
+          <img src="./frames/horizontal/ezgif-frame-010.jpg" alt="Luxury Sedan" style="width: 100%; border-radius: 16px; margin-bottom: 16px;" />
+          <h4 style="font-size: 1.125rem; font-weight: 700;">Executive Luxury Cruiser</h4>
+          <p style="font-size: 0.75rem; color: var(--color-slate-muted); margin-bottom: 12px;">12V 7Ah | Dual 35W | 4.5 km/h</p>
+          <div style="font-family: var(--font-mono); font-size: 1.5rem; font-weight: 900; color: #fff; margin-bottom: 16px;">₹27,999 INR</div>
+          <button class="btn-brand">Add to Cart</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 03 — WHY CHOOSE US -->
+    <section class="sec-block" style="background: rgba(15,23,42,0.4);">
+      <span class="tag-blue">// PEACE OF MIND FOR PARENTS</span>
+      <h3 class="sec-title">Why Parents Trust ToySquad</h3>
+
+      <div class="why-grid">
+        <div class="why-card">
+          <h4 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 8px;">🛡️ Child Safety Certified</h4>
+          <p style="font-size: 0.875rem; color: var(--color-slate-muted); line-height: 1.6;">5-point seatbelts and automatic soft-brake acceleration protection.</p>
+        </div>
+        <div class="why-card">
+          <h4 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 8px;">📻 Parent Remote Control</h4>
+          <p style="font-size: 0.875rem; color: var(--color-slate-muted); line-height: 1.6;">2.4G wireless remote override steering and instant emergency brake button.</p>
+        </div>
+        <div class="why-card">
+          <h4 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 8px;">🔋 Extended Battery Runtime</h4>
+          <p style="font-size: 0.875rem; color: var(--color-slate-muted); line-height: 1.6;">Heavy 24V battery systems delivering up to 90 minutes of continuous trail time.</p>
+        </div>
+        <div class="why-card">
+          <h4 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 8px;">🛋️ Comfortable Seating</h4>
+          <p style="font-size: 0.875rem; color: var(--color-slate-muted); line-height: 1.6;">Dual leatherette seats designed for growing kids with legroom support.</p>
+        </div>
+        <div class="why-card">
+          <h4 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 8px;">⚙️ Durable Construction</h4>
+          <p style="font-size: 0.875rem; color: var(--color-slate-muted); line-height: 1.6;">Tubular steel sub-frames and puncture-proof 14" EVA rubber tires.</p>
+        </div>
+        <div class="why-card">
+          <h4 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 8px;">🏆 1-Year Warranty Support</h4>
+          <p style="font-size: 0.875rem; color: var(--color-slate-muted); line-height: 1.6;">Full 1-year warranty coverage with doorstep spare parts support across India.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 04 — AGE / PRODUCT GUIDE -->
+    <section class="sec-block">
+      <span class="tag-blue">// FIND THE RIGHT MATCH</span>
+      <h3 class="sec-title">Age & Model Selection Guide</h3>
+
+      <div class="age-tabs">
+        <button class="age-btn active">Ages 1–3 Yrs</button>
+        <button class="age-btn">Ages 3–5 Yrs</button>
+        <button class="age-btn">Ages 5–7 Yrs</button>
+        <button class="age-btn">Ages 7+ Yrs</button>
+      </div>
+
+      <div style="background: rgba(30,41,59,0.7); border: 1px solid rgba(255,255,255,0.08); padding: 36px; border-radius: 24px; max-width: 800px; margin: 0 auto;">
+        <h4 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 12px;">Toddler Starter Rides (Ages 1–3)</h4>
+        <p style="font-size: 0.875rem; color: var(--color-slate-muted); line-height: 1.6; margin-bottom: 16px;">
+          Designed for toddlers developing motor coordination. Features ultra-soft acceleration curves, 5-point seat harness, and 100% remote priority control.
+        </p>
+        <div style="font-family: var(--font-mono); font-size: 0.8125rem; color: var(--color-brand-cyan);">
+          RECOMMENDED MODEL: Executive Luxury Cruiser (12V)
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 05 — HOW IT WORKS -->
+    <section class="sec-block">
+      <span class="tag-blue">// EASY 4-STEP PROCESS</span>
+      <h3 class="sec-title">How It Works</h3>
+
+      <div class="step-grid">
+        <div class="step-card">
+          <span style="font-family: var(--font-mono); font-size: 2rem; font-weight: 800; color: var(--color-brand-blue); display: block; margin-bottom: 12px;">01</span>
+          <h4 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 8px;">Choose Your Car</h4>
+          <p style="font-size: 0.875rem; color: var(--color-slate-muted);">Browse our curated collection of 12V and 24V models by age and specs.</p>
+        </div>
+        <div class="step-card">
+          <span style="font-family: var(--font-mono); font-size: 2rem; font-weight: 800; color: var(--color-brand-blue); display: block; margin-bottom: 12px;">02</span>
+          <h4 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 8px;">Place Your Order</h4>
+          <p style="font-size: 0.875rem; color: var(--color-slate-muted);">Transparent INR pricing with secure UPI and card payment options.</p>
+        </div>
+        <div class="step-card">
+          <span style="font-family: var(--font-mono); font-size: 2rem; font-weight: 800; color: var(--color-brand-blue); display: block; margin-bottom: 12px;">03</span>
+          <h4 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 8px;">Fast Delivery</h4>
+          <p style="font-size: 0.875rem; color: var(--color-slate-muted);">Pre-assembled crate shipping dispatched directly to your doorstep.</p>
+        </div>
+        <div class="step-card">
+          <span style="font-family: var(--font-mono); font-size: 2rem; font-weight: 800; color: var(--color-brand-blue); display: block; margin-bottom: 12px;">04</span>
+          <h4 style="font-size: 1.125rem; font-weight: 700; margin-bottom: 8px;">Enjoy The Ride</h4>
+          <p style="font-size: 0.875rem; color: var(--color-slate-muted);">Plug the battery, pair remote control in 3s, and start driving!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 06 — TRUST STRIP -->
+    <div class="trust-strip">
+      <div>✓ QUALITY CHECKED</div>
+      <div>✓ SAFE MATERIALS</div>
+      <div>🚚 FAST INDIA SHIPPING</div>
+      <div>🛡️ 1-YEAR WARRANTY</div>
+      <div>🔒 SECURE PAYMENT</div>
+    </div>
+
+    <!-- SECTION 07 — FEATURED CAR SHOWCASE -->
+    <section class="sec-block">
+      <div style="background: rgba(30,41,59,0.7); border: 1px solid rgba(255,255,255,0.08); padding: 48px; border-radius: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;">
+        <div>
+          <span class="tag-blue">FLAGSHIP SHOWCASE</span>
+          <h3 style="font-size: 2.5rem; font-weight: 900; margin-bottom: 16px;">Mercedes-Benz Unimog 4WD</h3>
+          <p style="font-size: 0.95rem; color: var(--color-slate-muted); line-height: 1.6; margin-bottom: 24px;">
+            Dual 200W high-torque motors, 24V SLA battery pack, 14" EVA all-terrain tires, and complete 2.4G parent remote safety override.
+          </p>
+          <div style="font-family: var(--font-mono); font-size: 2rem; font-weight: 900; margin-bottom: 24px;">₹41,999 INR</div>
+          <button class="btn-brand" style="font-size: 1rem; padding: 16px 32px;">Order Unimog 4WD →</button>
+        </div>
+        <div>
+          <img src="./frames/horizontal/ezgif-frame-048.jpg" alt="Unimog Showcase" style="width: 100%; border-radius: 20px;" />
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 08 — CUSTOMER REVIEWS -->
+    <section class="sec-block">
+      <span class="tag-blue">// VERIFIED FEEDBACK</span>
+      <h3 class="sec-title">Loved by Parents Across India</h3>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 32px;">
+        <div style="background: rgba(30,41,59,0.5); padding: 24px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08);">
+          <div style="color: #F59E0B; margin-bottom: 8px;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size: 0.875rem; color: var(--color-slate-muted); line-height: 1.6;">"The 24V Unimog 4WD is astonishing. My 5-year-old drives it on our lawn easily."</p>
+          <div style="margin-top: 16px; font-weight: 700; font-size: 0.875rem;">— Vikram S., Bengaluru</div>
+        </div>
+
+        <div style="background: rgba(30,41,59,0.5); padding: 24px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08);">
+          <div style="color: #F59E0B; margin-bottom: 8px;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size: 0.875rem; color: var(--color-slate-muted); line-height: 1.6;">"Super fast delivery and top build quality. Rubber tires are completely silent."</p>
+          <div style="margin-top: 16px; font-weight: 700; font-size: 0.875rem;">— Ananya M., Mumbai</div>
+        </div>
+
+        <div style="background: rgba(30,41,59,0.5); padding: 24px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08);">
+          <div style="color: #F59E0B; margin-bottom: 8px;">⭐⭐⭐⭐⭐</div>
+          <p style="font-size: 0.875rem; color: var(--color-slate-muted); line-height: 1.6;">"Parent remote override works instantly. Best birthday gift for my child!"</p>
+          <div style="margin-top: 16px; font-weight: 700; font-size: 0.875rem;">— Rohan P., Delhi</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 09 — FAQ ACCORDION -->
+    <section class="sec-block">
+      <span class="tag-blue">// FREQUENTLY ASKED QUESTIONS</span>
+      <h3 class="sec-title">Got Questions? We Have Answers.</h3>
+
+      <div style="max-w-3xl; margin-top: 32px;">
+        <div class="faq-item open" onclick="this.classList.toggle('open')">
+          <div class="faq-q">What age range is suitable for ToySquad kids electric cars? <span>▼</span></div>
+          <div class="faq-a">Our vehicles cater to children aged 1 to 8 years. Models range from 12V low-speed starter cars up to 24V 4WD off-roaders.</div>
+        </div>
+
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+          <div class="faq-q">How does parental remote control safety work? <span>▼</span></div>
+          <div class="faq-a">Every vehicle includes a 2.4G wireless parent remote controller with up to 30m range. Parents can override steering and press emergency brake instantly.</div>
+        </div>
+
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+          <div class="faq-q">How long does the battery last on a single charge? <span>▼</span></div>
+          <div class="faq-a">Our batteries provide 60 to 90 minutes of continuous trail driving per charge depending on rider weight and terrain.</div>
+        </div>
+
+        <div class="faq-item" onclick="this.classList.toggle('open')">
+          <div class="faq-q">What is the warranty coverage? <span>▼</span></div>
+          <div class="faq-a">All vehicles include a 1-Year Manufacturer Warranty covering motors, battery, motherboard electronics, and parent remote control.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 10 — FINAL CTA -->
+    <section class="sec-block" style="text-align: center; border-bottom: none;">
+      <div style="background: linear-gradient(180deg, rgba(37,99,235,0.2) 0%, rgba(15,23,42,0.9) 100%); border: 1px solid rgba(255,255,255,0.1); padding: 64px 32px; border-radius: 32px; max-width: 800px; margin: 0 auto;">
+        <h3 style="font-size: 3rem; font-weight: 900; margin-bottom: 16px;">Find Their First Ride.</h3>
+        <p style="font-size: 1.0625rem; color: var(--color-slate-muted); max-width: 500px; margin: 0 auto 32px;">
+          Choose a kids electric car designed for fun, comfort, and peace of mind.
+        </p>
+        <button class="btn-brand" style="font-size: 1.125rem; padding: 18px 40px;">Explore Our Cars →</button>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    (function () {
+      const TOTAL_FRAMES = 50;
+      const scrollContainer = document.getElementById('scrollContainer');
+      const canvas = document.getElementById('heroCanvas');
+      const ctx = canvas.getContext('2d');
+      const preloader = document.getElementById('preloader');
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+      const scrollHint = document.getElementById('scrollHint');
+      const soundBtn = document.getElementById('soundBtn');
+      const soundIcon = document.getElementById('soundIcon');
+      const soundText = document.getElementById('soundText');
+
+      let currentFolder = '';
+      let images = [];
+      let loadedCount = 0;
+      let isReady = false;
+      let isMuted = false;
+      let lastFrame = -1;
+      let startSoundPlayed = false;
+      let lastScrollTime = Date.now();
+      let lastScrollY = window.scrollY;
+
+      let audioCtx = null;
+      function getAudioContext() {
+        if (!audioCtx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) audioCtx = new AudioContext();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        return audioCtx;
+      }
+
+      function playAssemblySound(frameIdx, velocity) {
+        if (isMuted) return;
+        const ac = getAudioContext();
+        if (!ac) return;
+        try {
+          const now = ac.currentTime;
+
+          const snapOsc = ac.createOscillator();
+          const snapGain = ac.createGain();
+          snapOsc.type = frameIdx % 3 === 0 ? 'sawtooth' : 'square';
+          snapOsc.frequency.setValueAtTime(320 + (frameIdx * 15), now);
+          snapOsc.frequency.exponentialRampToValueAtTime(60, now + 0.04);
+
+          snapGain.gain.setValueAtTime(0.14, now);
+          snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+          snapOsc.connect(snapGain);
+          snapGain.connect(ac.destination);
+          snapOsc.start(now);
+          snapOsc.stop(now + 0.04);
+
+          if (frameIdx % 4 === 0 || velocity > 1.5) {
+            const drillOsc = ac.createOscillator();
+            const drillGain = ac.createGain();
+            drillOsc.type = 'sawtooth';
+            drillOsc.frequency.setValueAtTime(800 + Math.random() * 200, now);
+            drillOsc.frequency.linearRampToValueAtTime(1400, now + 0.06);
+
+            drillGain.gain.setValueAtTime(0.08, now);
+            drillGain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+
+            drillOsc.connect(drillGain);
+            drillGain.connect(ac.destination);
+            drillOsc.start(now);
+            drillOsc.stop(now + 0.06);
+          }
+        } catch (e) {}
+      }
+
+      function playCarStartSound() {
+        if (isMuted) return;
+        const ac = getAudioContext();
+        if (!ac) return;
+        try {
+          const now = ac.currentTime;
+
+          const starterOsc = ac.createOscillator();
+          const starterGain = ac.createGain();
+          starterOsc.type = 'sawtooth';
+          starterOsc.frequency.setValueAtTime(50, now);
+          starterOsc.frequency.linearRampToValueAtTime(120, now + 0.25);
+
+          const lfo = ac.createOscillator();
+          const lfoGain = ac.createGain();
+          lfo.frequency.value = 16;
+          lfoGain.gain.value = 40;
+          lfo.connect(starterOsc.frequency);
+          lfo.start(now);
+          lfo.stop(now + 0.25);
+
+          starterGain.gain.setValueAtTime(0.12, now);
+          starterGain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+
+          starterOsc.connect(starterGain);
+          starterGain.connect(ac.destination);
+          starterOsc.start(now);
+          starterOsc.stop(now + 0.25);
+
+          const revTime = now + 0.25;
+          const engineOsc1 = ac.createOscillator();
+          const engineOsc2 = ac.createOscillator();
+          const engineGain = ac.createGain();
+
+          engineOsc1.type = 'sawtooth';
+          engineOsc2.type = 'square';
+
+          engineOsc1.frequency.setValueAtTime(90, revTime);
+          engineOsc1.frequency.exponentialRampToValueAtTime(360, revTime + 0.4);
+          engineOsc1.frequency.exponentialRampToValueAtTime(160, revTime + 0.9);
+
+          engineOsc2.frequency.setValueAtTime(45, revTime);
+          engineOsc2.frequency.exponentialRampToValueAtTime(180, revTime + 0.4);
+          engineOsc2.frequency.exponentialRampToValueAtTime(80, revTime + 0.9);
+
+          engineGain.gain.setValueAtTime(0.01, revTime);
+          engineGain.gain.linearRampToValueAtTime(0.25, revTime + 0.2);
+          engineGain.gain.exponentialRampToValueAtTime(0.001, revTime + 0.9);
+
+          engineOsc1.connect(engineGain);
+          engineOsc2.connect(engineGain);
+          engineGain.connect(ac.destination);
+
+          engineOsc1.start(revTime);
+          engineOsc2.start(revTime);
+          engineOsc1.stop(revTime + 0.9);
+          engineOsc2.stop(revTime + 0.9);
+
+          setTimeout(() => {
+            if (isMuted) return;
+            try {
+              const hornTime = ac.currentTime;
+              const hOsc1 = ac.createOscillator();
+              const hOsc2 = ac.createOscillator();
+              const hGain = ac.createGain();
+
+              hOsc1.type = 'triangle';
+              hOsc2.type = 'sine';
+
+              hOsc1.frequency.setValueAtTime(370, hornTime);
+              hOsc2.frequency.setValueAtTime(466, hornTime);
+
+              hGain.gain.setValueAtTime(0.12, hornTime);
+              hGain.gain.setValueAtTime(0.12, hornTime + 0.12);
+              hGain.gain.exponentialRampToValueAtTime(0.001, hornTime + 0.18);
+
+              hOsc1.connect(hGain);
+              hOsc2.connect(hGain);
+              hGain.connect(ac.destination);
+
+              hOsc1.start(hornTime);
+              hOsc2.start(hornTime);
+              hOsc1.stop(hornTime + 0.18);
+              hOsc2.stop(hornTime + 0.18);
+            } catch(e) {}
+          }, 850);
+
+        } catch (e) {}
+      }
+
+      soundBtn.addEventListener('click', function() {
+        getAudioContext();
+        isMuted = !isMuted;
+        if (isMuted) {
+          soundIcon.textContent = '🔇';
+          soundText.textContent = 'Sound Off';
+        } else {
+          soundIcon.textContent = '🔊';
+          soundText.textContent = 'Sound On';
+        }
+      });
+
+      function getOrientationFolder() {
+        return window.innerWidth < 768 ? 'vertical' : 'horizontal';
+      }
+
+      function preloadFrames() {
+        const folder = getOrientationFolder();
+        if (folder === currentFolder && images.length === TOTAL_FRAMES) return;
+
+        currentFolder = folder;
+        images = [];
+        loadedCount = 0;
+        isReady = false;
+        preloader.classList.remove('hidden');
+
+        for (let i = 1; i <= TOTAL_FRAMES; i++) {
+          const img = new Image();
+          const frameNum = String(i).padStart(3, '0');
+          img.src = `./frames/${folder}/ezgif-frame-${frameNum}.jpg`;
+
+          const onFrameLoad = () => {
+            loadedCount++;
+            const percentage = Math.round((loadedCount / TOTAL_FRAMES) * 100);
+            progressFill.style.width = percentage + '%';
+            progressText.textContent = `Loading ${percentage}%`;
+
+            if (loadedCount === TOTAL_FRAMES) {
+              isReady = true;
+              preloader.classList.add('hidden');
+              requestAnimationFrame(render);
+            }
+          };
+
+          img.onload = onFrameLoad;
+          img.onerror = onFrameLoad;
+          images.push(img);
+        }
+      }
+
+      function render() {
+        if (!isReady || !images.length) return;
+
+        const maxScroll = scrollContainer.scrollHeight - window.innerHeight;
+        const scrollTop = Math.max(0, window.scrollY || window.pageYOffset);
+        const progress = Math.min(1, Math.max(0, scrollTop / maxScroll));
+
+        const frameIndex = Math.min(TOTAL_FRAMES - 1, Math.floor(progress * TOTAL_FRAMES));
+        const img = images[frameIndex];
+
+        const nowTime = Date.now();
+        const dt = Math.max(1, nowTime - lastScrollTime);
+        const dy = Math.abs(window.scrollY - lastScrollY);
+        const velocity = dy / dt;
+        lastScrollTime = nowTime;
+        lastScrollY = window.scrollY;
+
+        if (frameIndex !== lastFrame) {
+          playAssemblySound(frameIndex, velocity);
+          lastFrame = frameIndex;
+
+          if (frameIndex >= TOTAL_FRAMES - 2 && !startSoundPlayed) {
+            playCarStartSound();
+            startSoundPlayed = true;
+          } else if (frameIndex < TOTAL_FRAMES - 5) {
+            startSoundPlayed = false;
+          }
+        }
+
+        if (img && img.complete && img.naturalWidth > 0) {
+          const dpr = window.devicePixelRatio || 1;
+          const displayWidth = window.innerWidth;
+          const displayHeight = window.innerHeight;
+
+          if (canvas.width !== displayWidth * dpr || canvas.height !== displayHeight * dpr) {
+            canvas.width = displayWidth * dpr;
+            canvas.height = displayHeight * dpr;
+          }
+
+          ctx.save();
+          ctx.scale(dpr, dpr);
+
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, displayWidth, displayHeight);
+
+          const scale = Math.max(
+            displayWidth / img.naturalWidth,
+            displayHeight / img.naturalHeight
+          );
+
+          const x = (displayWidth - img.naturalWidth * scale) / 2;
+          const y = (displayHeight - img.naturalHeight * scale) / 2;
+
+          ctx.drawImage(
+            img,
+            0,
+            0,
+            img.naturalWidth,
+            img.naturalHeight,
+            x,
+            y,
+            img.naturalWidth * scale,
+            img.naturalHeight * scale
+          );
+
+          ctx.restore();
+        }
+
+        scrollHint.style.opacity = progress < 0.05 ? 1 : 0;
+      }
+
+      let ticking = false;
+      window.addEventListener('scroll', function () {
+        if (!ticking) {
+          requestAnimationFrame(function () {
+            render();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
+
+      window.addEventListener('resize', function () {
+        const newFolder = getOrientationFolder();
+        if (newFolder !== currentFolder) {
+          preloadFrames();
+        } else {
+          requestAnimationFrame(render);
+        }
+      });
+
+      preloadFrames();
+    })();
+  </script>
+</body>
+</html>

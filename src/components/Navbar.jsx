@@ -8,12 +8,18 @@ import Image from "next/image";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isHeroActive, setIsHeroActive] = useState(true);
 
-  // Scroll effect
+  // Track scroll position to keep navbar completely transparent during hero scroll animation
   useEffect(() => {
     const handleScroll = () => {
+      // 400vh hero section height check (~3.8 * innerHeight)
+      const heroThreshold = window.innerHeight * 3.8;
+      setIsHeroActive(window.scrollY < heroThreshold);
       setScrolled(window.scrollY > 20);
     };
+
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -30,18 +36,20 @@ const Navbar = () => {
 
   return (
     <>
-      {/* Main Navbar */}
+      {/* Main Navbar - 100% Transparent while scroll trigger animation is active */}
       <motion.nav
         initial={{ y: -80 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled
-            && " backdrop-blur-md shadow-md"
-            
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          isHeroActive
+            ? "bg-transparent border-none shadow-none"
+            : scrolled
+            ? "bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm"
+            : "bg-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between h-16 lg:h-20">
             {/* Logo */}
             <motion.div
@@ -52,14 +60,14 @@ const Navbar = () => {
               <Image
                 src="/logo.png"
                 alt="Logo"
-                width={80}
-                height={80}
+                width={85}
+                height={85}
                 className="object-contain"
               />
             </motion.div>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-2">
+            <div className="hidden lg:flex items-center space-x-3">
               {navItems.map((item, index) => (
                 <motion.a
                   key={item.name}
@@ -67,14 +75,13 @@ const Navbar = () => {
                   initial={{ opacity: 0, y: -15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 + 0.2 }}
-                  whileHover={{ scale: 1.1 }}
+                  whileHover={{ scale: 1.08 }}
                   whileTap={{ scale: 0.95 }}
-
-                  className={`relative px-4 py-2 rounded-full text-sm font-semibold hover:bg-blue-500/60  transition-all duration-200 text-gray-600 hover:text-gray-100`}
+                  className="relative px-4 py-2 rounded-full text-sm font-bold text-slate-900 hover:text-blue-600 transition-all duration-200"
                 >
                   {item.name}
                   <motion.div
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-white rounded-full"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-full"
                     initial={{ scaleX: 0 }}
                     whileHover={{ scaleX: 1 }}
                     transition={{ duration: 0.25 }}
@@ -88,9 +95,9 @@ const Navbar = () => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={toggleMenu}
-              className="lg:hidden p-2 rounded-full bg-white/20 text-white transition-all duration-200"
+              className="lg:hidden p-2.5 rounded-full bg-slate-900/5 text-slate-900 hover:bg-slate-900/10 transition-all duration-200"
             >
-              {isOpen ? <X className="color-gray-500 w-6 h-6" /> : <Menu className="text-gray-500 w-6 h-6" />}
+              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </motion.button>
           </div>
         </div>
@@ -115,7 +122,7 @@ const Navbar = () => {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="fixed top-16 right-0 bottom-0 w-72 bg-blue-500 text-white shadow-2xl z-50 lg:hidden overflow-y-auto"
+              className="fixed top-16 right-0 bottom-0 w-72 bg-white/95 backdrop-blur-xl text-slate-900 shadow-2xl z-50 lg:hidden overflow-y-auto"
             >
               <div className="p-6 space-y-3">
                 {navItems.map((item, index) => (
@@ -126,7 +133,7 @@ const Navbar = () => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 + 0.2 }}
                     onClick={toggleMenu}
-                    className="block w-full p-4 rounded-xl hover:bg-black/20 transition-all duration-200"
+                    className="block w-full p-4 rounded-xl font-bold text-slate-800 hover:bg-blue-50 hover:text-blue-600 transition-all duration-200"
                   >
                     {item.name}
                   </motion.a>
